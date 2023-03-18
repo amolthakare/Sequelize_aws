@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json())
 
 app.use("/",(req,res)=>{
-    res.send("hello")
+    res.send("hello amol")
 })
 // app.use("/users", UserRouter);
 // app.use("/orders",orderRouter)
