@@ -1,7 +1,7 @@
 const express = require('express');
 const { sequelize } = require('./config/config');
-const { orderRouter } = require('./routes/OrderRoutes');
-const { UserRouter } = require('./routes/UserRouter');
+// const { orderRouter } = require('./routes/OrderRoutes');
+// const { UserRouter } = require('./routes/UserRouter');
 const app = express();
 app.use(express.json())
 
