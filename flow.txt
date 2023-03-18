@@ -1,0 +1,122 @@
+Orders Table,
+Users Table,
+Timelines Table
+
+Users can have many orders
+An order can have info user who purchased it
+
+
+order 1 -> user 2
+
+order 5 -> user 3 
+
+let Users = sequelize.define("users", {
+	
+  userId : {
+  	type : Datatype.integers,
+    autoIncrement : true,
+    primaryKey : true
+  },
+  email : {
+		type : Datatype.string,
+   allowNull : false
+  }
+  
+})
+
+let orders = sequelize.define("orders", {
+	
+  userInfo : {
+  	type : Datatype.integers,
+   	references : {
+    	model : "users",
+      foreigKey : "userId"
+    }
+  },
+  orderId : {
+		type : Datatype.integer,
+   	allowNull : false,
+    primaryKey : true
+    autoIncrement : true
+  },
+  status : {
+  	type : Datatype.string,
+    defaultValue : "COFIRMED",
+    allowNull : false
+  }
+  
+})
+
+let timeline = sequelize.define("timeline", {
+	
+  userInfo : {
+  	type : Datatype.integers,
+   	references : {
+    	model : "users",
+      foreigKey : "userId"
+    }
+  },
+  previousState : {
+		type : Datatype.string,
+   allowNull : false
+  },
+  newState : {
+		type : Datatype.string,
+   allowNull : false
+  },
+  message : {
+		type : Datatype.string,
+   allowNull : false
+  },
+  timestamp : true,
+  orderId : {
+  	type : Datatype.integers,
+   	references : {
+    	model : "orders",
+      foreigKey : "orderId"
+    }
+  }
+})
+
+
+1. create an order -> no need to do anything in the timlines table.
+2. Update an Order Status -> the timelines table will be updated
+
+let orderDetails = Order.findOne({ orderId : orderId, userId: userId })
+let previosOrderState = orderDetails.status
+if(orderDetails)
+{
+	orderDetails.status = req.body.status
+  await orderDetails.save()
+  let isTimelineForThatOrder = await Timeline.findOne({ { orderId : orderId, userId: userId } }) 
+  if(isTimelineForThatOrder)
+  {
+  		isTimelineForThatOrder.message = `Order updated from ${previousState} to ${newState}`.
+      isTimelineForThatOrder.previousState = previosOrderState
+      isTimelineForThatOrder.newState = req.body.status
+      await isTimelineForThatOrder.save()
+      res.status(200).send({data : "Order Status succesffully updated."})
+  }
+  else
+  {
+  	await Timeline.create()
+  }
+}
+else
+{
+	res.send({  data : "order do not exists" })
+}
+
+3. Get Order details by user ( should have timelines data as well )
+
+
+Order.findAll({ where : { userId : req.body.userId }, include : { model : "timeline" } })
+
+
+
+order 1 -> user 1
+order 3 -> user 1
+
+
+order 4 -> user 2
+order 2 -> user 2
